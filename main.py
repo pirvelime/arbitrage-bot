@@ -2,26 +2,30 @@ from utils.scrapper import CoinMarketCapScrapper
 import time
 import sys
 
+cmc = CoinMarketCapScrapper()
+
 def main():
-    cmc = CoinMarketCapScrapper()
     tokens = cmc.get_tokens()
     try:
         for token in tokens:
-            # exchanges = cmc.get_exchanges_for_token( "tezos" )
-            # print( token['symbol'] )
             exchanges = cmc.pretty_print_exchanges_for_token(token['slug'])
-            exs = cmc.exchanges
-            maxmin = percentage_diff( exs[0]['price'], exs[-1]['price'] )
             print( exchanges )
-            print( f"Opportunity on {token['symbol']}: {maxmin}" )
-            line = "=" * 70
-            output = "%70s\n" % line
-            print( line )
+            opportunity(token)
             time.sleep(1)
             exit()
 
     except KeyboardInterrupt:
         sys.exit(0)
+
+def opportunity(token = None) :
+    if not token :
+        raise ValueError("No token provided!")
+    exs = cmc.exchanges
+    maxmin = percentage_diff( exs[0]['price'], exs[-1]['price'] )
+    print( f"Opportunity on {token['symbol']}: {maxmin}" )
+    line = "=" * 70
+    output = "%70s\n" % line
+    print( line )
 
 def percentage_diff(old_value, new_value):
     try:
