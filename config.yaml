@@ -1,0 +1,17 @@
+exchanges:
+  binance:
+    enabled: true
+  mexc:
+    enabled: true
+  bybit:
+    enabled: true
+  bitget:
+    enabled: true
+  kucoin:
+    enabled: true
+  kraken:
+    enabled: true
+  gate.io:
+    enabled: true
+  coinbase:
+    enabled: false

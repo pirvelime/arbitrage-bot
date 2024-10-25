@@ -1,16 +1,31 @@
 from utils.scrapper import CoinMarketCapScrapper
+from utils.config import ConfigHandler
 import time
 import sys
+from pathlib import Path
 
 cmc = CoinMarketCapScrapper()
+config = ConfigHandler()
 
 def main():
+
+    for exc in config.get_exchanges() :
+        if config.is_enabled( exc ) :
+            print( exc )
+    exit()
     tokens = cmc.get_tokens()
     try:
         for token in tokens:
+            stats_file = f"opportunities/{token['slug']}"
+            Path(stats_file).parent.mkdir(parents=True, exist_ok=True)
+
             exchanges = cmc.pretty_print_exchanges_for_token(token['slug'])
+            stats = opportunity(token)
             print( exchanges )
-            opportunity(token)
+            print( stats )
+            with open(stats_file, 'w') as file:
+                file.write(exchanges)
+                file.write(stats)
             time.sleep(1)
             exit()
 
@@ -22,10 +37,10 @@ def opportunity(token = None) :
         raise ValueError("No token provided!")
     exs = cmc.exchanges
     maxmin = percentage_diff( exs[0]['price'], exs[-1]['price'] )
-    print( f"Opportunity on {token['symbol']}: {maxmin}" )
+    output = f"\nOpportunity on {token['symbol']}: {maxmin}\n" 
     line = "=" * 70
-    output = "%70s\n" % line
-    print( line )
+    output += "%70s\n" % line
+    return output
 
 def percentage_diff(old_value, new_value):
     try:

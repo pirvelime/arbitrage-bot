@@ -60,3 +60,6 @@ coverage.xml
 
 # Trash dir
 trash/
+
+# Opportunities Dir
+opportunities/*
