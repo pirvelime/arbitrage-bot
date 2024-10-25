@@ -1,3 +1,4 @@
+min_volume: 30000
 exchanges:
   binance:
     enabled: true

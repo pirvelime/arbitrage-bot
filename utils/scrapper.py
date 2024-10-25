@@ -85,7 +85,7 @@ class CoinMarketCapScrapper:
             mpair  = pair['marketPair']
             price  = pair['price']
             volume = pair['quotes'][0]['volume24h']
-            if volume < 30000 or not config.is_enabled( name.lower() ):
+            if volume < config.get( 'min_volume' ) or not config.is_enabled( name.lower() ):
                 continue
             exists = [ item for item in pairs if item['name'] == name ]
             if exists:
