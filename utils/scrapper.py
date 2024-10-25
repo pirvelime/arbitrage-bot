@@ -1,7 +1,10 @@
 import requests
 from bs4 import BeautifulSoup
 from urllib.parse import urlencode
+from utils.config import ConfigHandler
 import json
+
+config = ConfigHandler()
 requests.packages.urllib3.disable_warnings()
 
 class CoinMarketCapScrapper:
@@ -82,10 +85,10 @@ class CoinMarketCapScrapper:
             mpair  = pair['marketPair']
             price  = pair['price']
             volume = pair['quotes'][0]['volume24h']
-            if volume < 30000 :
+            if volume < 30000 or not config.is_enabled( name.lower() ):
                 continue
             exists = [ item for item in pairs if item['name'] == name ]
-            if( exists ) :
+            if exists:
                 continue
             report = { "name": name, "pair": mpair, "price": price, "volume": f"{int(volume):,}"  }
             pairs.append( report )

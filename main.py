@@ -9,10 +9,6 @@ config = ConfigHandler()
 
 def main():
 
-    for exc in config.get_exchanges() :
-        if config.is_enabled( exc ) :
-            print( exc )
-    exit()
     tokens = cmc.get_tokens()
     try:
         for token in tokens:
@@ -27,7 +23,6 @@ def main():
                 file.write(exchanges)
                 file.write(stats)
             time.sleep(1)
-            exit()
 
     except KeyboardInterrupt:
         sys.exit(0)
