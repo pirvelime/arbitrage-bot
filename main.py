@@ -30,9 +30,12 @@ def main():
 def opportunity(token = None) :
     if not token :
         raise ValueError("No token provided!")
-    exs = cmc.exchanges
-    maxmin = percentage_diff( exs[0]['price'], exs[-1]['price'] )
-    output = f"\nOpportunity on {token['symbol']}: {maxmin}\n" 
+    try:
+        exs = cmc.exchanges
+        maxmin = percentage_diff( exs[0]['price'], exs[-1]['price'] )
+        output = f"\nOpportunity on {token['symbol']}: {maxmin}\n"
+    except:
+        output = f"\nOpportunity on {token['symbol']}: 0%\n"
     line = "=" * 70
     output += "%70s\n" % line
     return output
