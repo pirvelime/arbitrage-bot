@@ -16,3 +16,5 @@ exchanges:
     enabled: true
   coinbase:
     enabled: false
+  htx:
+    enabled: false

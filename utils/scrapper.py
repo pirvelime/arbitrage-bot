@@ -27,7 +27,7 @@ class CoinMarketCapScrapper:
 
     def get_tokens(self, number=100):
         start = 1
-        limit = 100
+        limit = 500
         tokens = list()
         api_url = 'https://api.coinmarketcap.com'
         params = {

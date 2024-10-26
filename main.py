@@ -22,7 +22,7 @@ def main():
             with open(stats_file, 'w') as file:
                 file.write(exchanges)
                 file.write(stats)
-            time.sleep(1)
+            # time.sleep(1)
 
     except KeyboardInterrupt:
         sys.exit(0)
