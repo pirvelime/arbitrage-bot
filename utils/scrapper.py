@@ -25,38 +25,33 @@ class CoinMarketCapScrapper:
         response.raise_for_status()
         return response.text
 
-    def get_tokens( self, number = 100 ) :
-        soup = BeautifulSoup(self.get_url(self.base_url), 'html.parser')
-        table = soup.find('table', attrs={"class": "cmc-table"}).find("tbody")
+    def get_tokens(self, number=100):
+        start = 1
+        limit = 100
         tokens = list()
+        api_url = 'https://api.coinmarketcap.com'
+        params = {
+            'convertId': '2781,1',
+            'start': start,
+            'limit': limit,
+            'sortType': 'desc',
+            'sortBy': 'rank',
+            'rankRange': 100,
+            'aux': 'cmc_rank,date_added,max_supply,circulating_supply,total_supply,self_reported_circulating_supply,self_reported_market_cap'
+        }
 
-        for tr in table.find_all('tr'):
-            tds = tr.find_all( "td" )
-            try:
-                tname = tds[2].find( "p", attrs={"class": "coin-item-name"}).text
-                tsymbol = tds[2].find( "p", attrs={"class": "coin-item-symbol"}).text
-            except:
-                tname = ''
-                tsymbol = ''
+        if limit < number :
+            for i in range( int(number / limit ) ) :
+                params.update( start=(limit*i)+1 )
+                url = f'{api_url}/data-api/v3/cryptocurrency/listing?{urlencode(params)}'
+                batch = self.parse_tokens( json.loads( self.get_url( url ) ) )
+                tokens.append(batch)
+        else:
+            url = f'{api_url}/data-api/v3/cryptocurrency/listing?{urlencode(params)}'
+            batch = self.parse_tokens(json.loads(self.get_url(url)))
+            tokens.append(batch)
 
-            spans = tds[2].find_all( "span" )
-            
-            tlink = "{}{}".format( self.base_url, tds[2].find("a").get("href") )
-            slug = "{}".format( tds[2].find("a").get("href").replace( "/currencies/", "" ).replace("/", "" ) )
-            tprice = tds[3].text.strip()
-            if spans :
-                tname = spans[1].text.strip()
-                tsymbol = spans[2].text.strip()
-
-            token = {
-                "name": tname,
-                "slug": slug,
-                "symbol": tsymbol,
-                "price": tprice,
-                "link": tlink
-            }
-            tokens.append(token)
-        return tokens
+        return tokens[0]
 
     def gen_token_url( self, token = None ) :
         if not token :
@@ -120,3 +115,18 @@ class CoinMarketCapScrapper:
         self.exchanges = exchanges
         self.token = token
         return exchanges
+
+
+    def parse_tokens(self, tokens: object) -> object:
+        results = list()
+        for t in tokens['data']['cryptoCurrencyList']:
+            link = f"{self.base_url}/currencies/{t['slug']}/"
+            token = {
+                "name": t['name'],
+                "slug": t['slug'],
+                "symbol": t['symbol'],
+                "price": t['quotes'][0]['price'],
+                "link": link
+            }
+            results.append(token)
+        return results
