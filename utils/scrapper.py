@@ -31,15 +31,16 @@ class CoinMarketCapScrapper:
         tokens = list()
         api_url = 'https://api.coinmarketcap.com'
         params = {
-            'convertId': '2781,1',
             'start': start,
             'limit': limit,
-            'sortType': 'desc',
-            'sortBy': 'rank',
-            'rankRange': 100,
-            'aux': 'cmc_rank,date_added,max_supply,circulating_supply,total_supply,self_reported_circulating_supply,self_reported_market_cap'
+            'sortBy' : 'market_cap',
+            'sortType' : 'desc',
+            'convert' : 'USD, BTC, ETH',
+            'cryptoType' : 'all',
+            'tagType' : 'all',
+            'audited' : False,
+            'aux' : 'ath,atl,high24h,low24h,num_market_pairs,cmc_rank,date_added,max_supply,circulating_supply,total_supply,volume_7d,volume_30d,self_reported_circulating_supply,self_reported_market_cap'
         }
-
         if limit < number :
             for i in range( int(number / limit ) ) :
                 params.update( start=(limit*i)+1 )
@@ -51,7 +52,7 @@ class CoinMarketCapScrapper:
             batch = self.parse_tokens(json.loads(self.get_url(url)))
             tokens.append(batch)
 
-        return tokens[0]
+        return self._flatten_tokens(tokens)
 
     def gen_token_url( self, token = None ) :
         if not token :
@@ -130,3 +131,11 @@ class CoinMarketCapScrapper:
             }
             results.append(token)
         return results
+
+    def _flatten_tokens(self , tokens: list) -> list:
+        # final = list()
+        # for batches in tokens:
+        #     for token in batches:
+        #         final.append( token )
+        # return final
+        return [ item for row in tokens for item in row ]

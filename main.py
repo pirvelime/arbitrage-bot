@@ -9,7 +9,7 @@ config = ConfigHandler()
 
 def main():
 
-    tokens = cmc.get_tokens()
+    tokens = cmc.get_tokens(500)
     try:
         for token in tokens:
             stats_file = f"opportunities/{token['slug']}"
